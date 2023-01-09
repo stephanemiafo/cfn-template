@@ -20,7 +20,7 @@ phases:
       - sudo apt-get install python3-pip -y
       - echo installing cfn-lint
       - pip3 install cfn-lint
-      - modifying the $PATH
+      - echo modifying the $PATH
       - echo 'export PATH="/home/ubuntu/.local/bin:$PATH"' >> ~/.bashrc
       - echo making the $PATH permanent
       - source ~/.bashrc
