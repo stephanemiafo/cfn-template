@@ -15,7 +15,7 @@ phases:
       # - echo installing aws cli 
       # - sudo apt-get install awscli -y
       - echo installing pip3
-      - sudo apt install python3-pip -y
+      - sudo apt-get install python3-pip -y
       - echo installing cfn-lint
       - pip3 install cfn-lint
       - modifying the $PATH
