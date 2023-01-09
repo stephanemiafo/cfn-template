@@ -12,8 +12,8 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo installing aws cli 
-      - sudo apt-get install awscli -y
+      # - echo installing aws cli 
+      # - sudo apt-get install awscli -y
       - echo installing pip3
       - sudo apt install python3-pip -y
       - echo installing cfn-lint
