@@ -23,7 +23,7 @@ phases:
       - echo modifying the $PATH
       - echo 'export PATH="/home/ubuntu/.local/bin:$PATH"' >> ~/.bashrc
       - echo making the $PATH permanent
-      - source ~/.bashrc
+      # - source ~/.bashrc
       - echo validate cfn template 
       - cfn-lint aws-infra.yaml
       - echo package the cfn template
