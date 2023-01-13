@@ -14,15 +14,16 @@ phases:
       - echo Build started on `date`
       - sudo apt-get update -y      
       - sudo apt-get upgrade -y
-      - echo installing aws cli 
-      - sudo apt-get install awscli -y
+      # - echo installing aws cli  1.22.34
+      # - sudo apt-get install awscli -y
       - echo installing pip3
       - sudo apt-get install python3-pip -y
       - echo installing cfn-lint
       - pip3 install cfn-lint
+      # - pip install --upgrade pip
       - echo modifying the $PATH
       - echo 'export PATH="/home/ubuntu/.local/bin:$PATH"' >> ~/.bashrc
-      - echo making the $PATH permanent
+      # - echo making the $PATH permanent
       # - source ~/.bashrc
       - echo validate cfn template 
       - cfn-lint aws-infra.yaml
