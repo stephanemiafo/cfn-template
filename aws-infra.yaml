@@ -1,3 +1,4 @@
+
 Parameters:
   EnvironmentName:
     Description: An environment name that is prefixed to resource names
@@ -28,116 +29,28 @@ Parameters:
     Type: String
     Default: 10.192.5.0/24
 
-  PrivateSubnet1CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
+  InstanceType:
+    Description: Instance hosting a web server.
     Type: String
-    Default: 10.192.20.0/24
-
-  PrivateSubnet2CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone
-    Type: String
-    Default: 10.192.21.0/24
-
-  PrivateSubnet3CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the third Availability Zone
-    Type: String
-    Default: 10.192.6.0/24
-
-  DataBaseSubnet1CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
-    Type: String
-    Default: 10.192.0.0/24
-
-  DataBaseSubnet2CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone
-    Type: String
-    Default: 10.192.1.0/24
-
-  DataBaseSubnet3CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the third Availability Zone
-    Type: String
-    Default: 10.192.7.0/24
-
-  # InstanceType:
-  #   Description: Instance hosting a web server.
-  #   Type: String
-  #   Default: t2.micro
+    Default: t2.micro
     
-  # ImageId:
-  #   Description: Template that will run on the EC2
-  #   Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-  #   Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+  ImageId:
+    Description: Template that will run on the EC2
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
 
-  # MyKeyName:
-  #   Description: Name of an existing EC2 KeyPair to enable SSH to the instance.
-  #   Type: AWS::EC2::KeyPair::KeyName
-  #   ConstraintDescription: Must be the name of an existing EC2 KeyPair.
+  MyKeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH to the instance.
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair.
 
-  # DBPort: 
-  #   Default: 3306
-  #   Description: TCP/IP port for the database
-  #   Type: Number
-  #   MinValue: 1150
-  #   MaxValue: 65535
+  SsmPolicy:
+   Description: The policy for Amazon EC2 Role to enable AWS Systems Manager service core functionality.
+   Type: String 
+   Default: 'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'     # AmazonSSMManagedInstanceCore
 
-  # DBUsername:
-  #   Description: Username for MySQL database access
-  #   NoEcho: 'true'
-  #   Default: /test/database/UserName
-  #   Type: AWS::SSM::Parameter::Value<String>
-  #   MinLength: '8'
-  #   MaxLength: '41'
-    # ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
 
-  # DBPwd: 
-  #   Description: The database admin account password
-  #   NoEcho: true
-  #   Default: /test/database/password
-  #   Type: AWS::SSM::Parameter::Value<String>
-  #   MinLength: '8'
-  #   MaxLength: '41'
-    
-  # DBInstanceID:
-  #   Default: database-1
-  #   Description: My database instance identifier
-  #   Type: String
-  #   MinLength: '1'
-  #   MaxLength: '63'
-  #   ConstraintDescription: >-
-  #     Must begin with a letter and must not end with a hyphen or contain two
-  #     consecutive hyphens.
-  # DBName:
-  #   Default: MyDataBase
-  #   Description: the name of my database
-  #   Type: String
-  #   MinLength: '1'
-  #   MaxLength: '64'
-  #   ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
 
-  # DBInstanceClass:
-  #   Default: db.t3.micro
-  #   Description: DB instance class
-  #   Type: String
-  #   ConstraintDescription: Must select a valid DB instance type.
-
-  # DBAllocatedStorage:
-  #   Default: '20'
-  #   Description: The size of the database (GiB)
-  #   Type: Number
-  #   MinValue: '20'
-  #   MaxValue: '65536'
-  #   ConstraintDescription: must be between 20 and 65536 GiB.
-
-  # MySourceRegion:
-  #   Default: "us-east-1"
-  #   Description: The Region where the DB will be created
-  #   Type: String
-
-  # MyRRAvailabilityZone:
-  #   Default: "us-east-2a"
-  #   Description: The AZ where the RR will be created
-  #   Type: String
-    
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -147,7 +60,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName}-VPC
+          Value: !Sub "${EnvironmentName}-VPC" 
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -171,7 +84,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName}-Public-Subnet(AZ1)
+          Value: !Sub "${EnvironmentName}-Public-Subnet(AZ1)" # quote
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -182,7 +95,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName}-Public-Subnet(AZ2)
+          Value: !Sub "${EnvironmentName}-Public-Subnet(AZ2)" # quote
 
   PublicSubnet3:
     Type: AWS::EC2::Subnet
@@ -193,110 +106,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName}-Public-Subnet(AZ3)
-
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref PrivateSubnet1CIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-Private-Subnet(AZ1)
-
-  PrivateSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
-      CidrBlock: !Ref PrivateSubnet2CIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-Private-Subnet(AZ2)
-
-  PrivateSubnet3:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 2, !GetAZs  '' ]
-      CidrBlock: !Ref PrivateSubnet3CIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-Private-Subnet(AZ3)
-      
-  DataBaseSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref DataBaseSubnet1CIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-DB-subnet(AZ1)
-
-  DataBaseSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
-      CidrBlock: !Ref DataBaseSubnet2CIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-DB-subnet(AZ2)      EnvironmentName
-
-  DataBaseSubnet3:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 2, !GetAZs  '' ]
-      CidrBlock: !Ref DataBaseSubnet3CIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-DB-subnet(AZ3)
-
-  NatGateway1EIP:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
-
-  NatGateway2EIP:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
-
-  
-  NatGateway3EIP:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
-
-  NatGateway1:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGateway1EIP.AllocationId
-      SubnetId: !Ref PublicSubnet1
-
-  NatGateway2:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGateway2EIP.AllocationId
-      SubnetId: !Ref PublicSubnet2
-
-  NatGateway3:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGateway3EIP.AllocationId
-      SubnetId: !Ref PublicSubnet3    
+          Value: !Sub "${EnvironmentName}-Public-Subnet(AZ3)" # quote
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -332,272 +142,88 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet3
 
-  PrivateRouteTable1:
-    Type: AWS::EC2::RouteTable
+  SsmRole:
+    Type: AWS::IAM::Role
     Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-Private-RTB(AZ1)
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns: 
+        - !Ref SsmPolicy
+     
+  RootInstanceProfile: 
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Path: "/"
+      Roles: 
+      - Ref: SsmRole      
 
-  DefaultPrivateRoute1:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable1
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway1
-
-  PrivateSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable1
-      SubnetId: !Ref PrivateSubnet1
-
-  PrivateRouteTable2:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} Private RTB (AZ2)
-
-  DefaultPrivateRoute2:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable2
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway2
-
-  PrivateSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable2
-      SubnetId: !Ref PrivateSubnet2
-
-  PrivateRouteTable3:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} Private RTB (AZ3)
-
-  DefaultPrivateRoute3:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable3
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway3
-
-  PrivateSubnet3RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable3
-      SubnetId: !Ref PrivateSubnet3
-
-  DataBaseRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-DB-RTB
-
-  DataBase1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref DataBaseRouteTable
-      SubnetId: !Ref DataBaseSubnet1
-
-  DataBase2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref DataBaseRouteTable
-      SubnetId: !Ref DataBaseSubnet2    
-
-
-  DataBase3RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref DataBaseRouteTable
-      SubnetId: !Ref DataBaseSubnet3
-
-  PublicNetworkAcl:
-    Type: 'AWS::EC2::NetworkAcl'
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-Public-NACL
-        
-  InboundHTTPPublicNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref PublicNetworkAcl
-      RuleNumber: '100'
-      Protocol: '6'
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0
-      PortRange:
-        From: '80'
-        To: '80'
-
-  InboundHTTPSPublicNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref PublicNetworkAcl
-      RuleNumber: '101'
-      Protocol: '6'
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0
-      PortRange:
-        From: '443'
-        To: '443'
-
-  InboundSSHPublicNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref PublicNetworkAcl
-      RuleNumber: '102'
-      Protocol: '6'
-      RuleAction: allow
-      CidrBlock: !Ref VpcCIDR
-      PortRange:
-        From: '22'
-        To: '22'
-
-  InboundEmphemeralPublicNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref PublicNetworkAcl
-      RuleNumber: '103'
-      Protocol: '6'
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0
-      PortRange:
-        From: '1024'
-        To: '65535'
-
-  OutboundPublicNetworkAclEntry:
-    Type: AWS::EC2::NetworkAclEntry
-    Properties:
-      NetworkAclId: !Ref PublicNetworkAcl
-      RuleNumber: 100
-      Protocol: -1
-      Egress: true
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0
-
-  PublicSubnet1NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
+  MyPubTestInstance1: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: 
+        Ref: ImageId
+      InstanceType: 
+        Ref: InstanceType
+      SecurityGroupIds: 
+        - Ref: PublicSecurityGroup
       SubnetId: !Ref PublicSubnet1
-      NetworkAclId: !Ref PublicNetworkAcl
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-Server-public1
+      KeyName:
+        Ref: MyKeyName
+      IamInstanceProfile:       
+        Ref: RootInstanceProfile
 
-  PublicSubnet2NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
+  MyPubTestInstance2: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: 
+        Ref: ImageId
+      InstanceType: 
+        Ref: InstanceType
+      SecurityGroupIds: 
+        - Ref: PublicSecurityGroup
       SubnetId: !Ref PublicSubnet2
-      NetworkAclId: !Ref PublicNetworkAcl
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-Server-public2ll
+          
+      KeyName:
+        Ref: MyKeyName
+      IamInstanceProfile:       
+        Ref: RootInstanceProfile
 
-  PublicSubnet3NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      SubnetId: !Ref PublicSubnet3
-      NetworkAclId: !Ref PublicNetworkAcl
-
-  PrivateNetworkAcl:
-    Type: 'AWS::EC2::NetworkAcl'
-    Properties:
+      GroupDescription: Allow http access and ssh into the instance
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0  
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref VpcCIDR
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName}-Private-NACL
-       
-  InboundPrivateNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref PrivateNetworkAcl
-      RuleNumber: '100'
-      Protocol: '6'
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0 
-      PortRange:
-        From: '0'
-        To: '65535'
+          Value: !Sub ${EnvironmentName}-Public-SG
 
-  OutBoundPrivateNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref PrivateNetworkAcl
-      RuleNumber: 100
-      Protocol: -1
-      Egress: true
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0
 
-  PrivateSubnet1NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
-      SubnetId: !Ref PrivateSubnet1
-      NetworkAclId: !Ref PrivateNetworkAcl
 
-  PrivateSubnet2NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
-      SubnetId: !Ref PrivateSubnet2
-      NetworkAclId: !Ref PrivateNetworkAcl
 
-  PrivateSubnet3NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
-      SubnetId: !Ref PrivateSubnet3
-      NetworkAclId: !Ref PrivateNetworkAcl    
 
-  DataBaseNetworkAcl:
-    Type: 'AWS::EC2::NetworkAcl'
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-DB-NACL
-       
-  InboundDataBaseNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref DataBaseNetworkAcl
-      RuleNumber: '100'
-      Protocol: '6'
-      RuleAction: allow
-      CidrBlock: !Ref VpcCIDR 
-      PortRange:
-        From: '0'
-        To: '65535'
 
-  OutBoundDataBaseNetworkAclEntry:
-    Type: 'AWS::EC2::NetworkAclEntry'
-    Properties:
-      NetworkAclId: !Ref DataBaseNetworkAcl
-      RuleNumber: 100
-      Protocol: -1
-      Egress: true
-      RuleAction: allow
-      CidrBlock: 0.0.0.0/0
 
-  DataBaseSubnet1NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
-      SubnetId: !Ref DataBaseSubnet1
-      NetworkAclId: !Ref DataBaseNetworkAcl
 
-  DataBaseSubnet2NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
-      SubnetId: !Ref DataBaseSubnet2
-      NetworkAclId: !Ref DataBaseNetworkAcl
-      
-  DataBaseSubnet3NetworkAclAssociation:
-    Type: 'AWS::EC2::SubnetNetworkAclAssociation'
-    Properties:
-      SubnetId: !Ref DataBaseSubnet3
-      NetworkAclId: !Ref DataBaseNetworkAcl

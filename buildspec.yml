@@ -11,28 +11,46 @@ phases:
       - pip3 --version
   build:
     commands:
-      - echo Build started on `date`
-      - sudo apt-get update -y      
-      - sudo apt-get upgrade -y
-      # - echo installing aws cli  1.22.34
-      # - sudo apt-get install awscli -y
-      - echo installing pip3
-      - sudo apt-get install python3-pip -y
-      - echo installing cfn-lint
-      - pip3 install cfn-lint
-      # - pip install --upgrade pip
-      - echo modifying the $PATH
-      - echo 'export PATH="/home/ubuntu/.local/bin:$PATH"' >> ~/.bashrc
-      # - echo making the $PATH permanent
-      # - source ~/.bashrc
-      - echo validate cfn template 
-      - cfn-lint aws-infra.yaml
-      - echo package the cfn template
-      - aws cloudformation package --template-file aws-infra.yaml --s3-bucket mynewestfirstbucket --output-template-file aws-infra-artifacts.yaml
+      - echo check if AWS CLI installed...
+      - aws --version
+      - echo check if python installed...
+      - python3 --version
+      - echo check if pip python package manager installed...
+      - pip3 --version
+      - echo Installing cfn-lint
+      - pip3 install cfn-lint  
+      - echo add "/usr/local/bin" to $PATH
+      - echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc 
+      - echo make the change permanent 
+      - source ~/.bashrc   
+      - echo Checking cfn-lint installed...
+      - cfn-lint --version
   post_build:
-    commands:
+    commands:  
+      - echo Validating the cfn template
+      - cfn-lint aws-infra.yaml
+      - echo cfn template Build started on `date`
+      - aws cloudformation package --template-file aws-infra.yaml --s3-bucket auto-prod-deployment-bucket --output-template-file output-template.yaml
       - echo Build completed on `date`
 artifacts:
   files:
+    # "**/*" for the whole
+    - output-template.yaml #zipped in the build artifact
     - aws-infra.yaml
-    - aws-infra-artifacts.yaml
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
